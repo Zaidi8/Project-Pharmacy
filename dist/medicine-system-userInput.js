@@ -8,6 +8,20 @@ class Medicines {
         this.quantity = quantity;
         this.price_per_unit = price_per_unit;
     }
+    addStock(quantity) {
+        this.quantity += quantity;
+    }
+    removeStock(quantity) {
+        this.quantity -= quantity;
+    }
+    compareStock(otherMedicine) {
+        if (this.manufacturer === otherMedicine.manufacturer && this.name === otherMedicine.name && this.potency === otherMedicine.potency) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     static addMedicine(id, name, potency, manufacturer, quantity, price_per_unit) {
         if (Medicines.validateMedicineInput(id, name, potency, manufacturer, quantity, price_per_unit)) {
             medicineLists.push(new Medicines(id, name, potency, manufacturer, quantity, price_per_unit));
@@ -86,6 +100,7 @@ class Suppliers {
         this.address = address;
         this.description = description;
     }
+    //friend like function to access prrivate members
     static addSupplier(id, company_name, representative_name, address, description) {
         if (Suppliers.validateSupplierInput(id, company_name, representative_name, address, description)) {
             supplierLists.push(new Suppliers(id, company_name, representative_name, address, description));
@@ -151,6 +166,14 @@ class Suppliers {
         }
         return true;
     }
+    //getter for friend function
+    getAddress() {
+        return this.address;
+    }
+}
+//friend like function to aaccess private members
+function Address(supplier) {
+    return supplier.getAddress();
 }
 class SaleInvoices {
     constructor(inv_no, date, id, manufacturer, quantities, total_price, discount) {
@@ -278,6 +301,8 @@ do {
                 "Edit Medicine",
                 "Delete Medicine",
                 "View Stock",
+                "Update Stock",
+                "Compare Medicines",
             ]);
             switch (medicineChoice) {
                 case 1: {
@@ -313,6 +338,52 @@ do {
                         medicine.searchMedicine();
                     });
                     break;
+                case 5: { // Update Stock
+                    const index = Number(prompt("Enter Medicine Index:")) || 0;
+                    const updateChoice = promptMenu("Update Stock:", ["Add Stock", "Remove Stock"]);
+                    switch (updateChoice) {
+                        case 1: {
+                            const quantity = Number(prompt("Enter Quantity to Add:")) || 0;
+                            medicineLists[index].addStock(quantity);
+                            console.log("Stock updated successfully.");
+                            break;
+                        }
+                        case 2: {
+                            const quantity = Number(prompt("Enter Quantity to Remove:")) || 0;
+                            if (quantity > medicineLists[index].quantity) {
+                                console.error("Cannot remove more stock than available.");
+                            }
+                            else {
+                                medicineLists[index].removeStock(quantity);
+                                console.log("Stock updated successfully.");
+                            }
+                            break;
+                        }
+                        default:
+                            console.error("Invalid choice. Returning to the menu.");
+                            break;
+                    }
+                    break;
+                }
+                case 6: { // Compare Medicines
+                    const firstIndex = Number(prompt("Enter Index of the First Medicine:")) || 0;
+                    const secondIndex = Number(prompt("Enter Index of the Second Medicine:")) || 0;
+                    if (firstIndex < 0 || secondIndex < 0 ||
+                        firstIndex >= medicineLists.length ||
+                        secondIndex >= medicineLists.length) {
+                        console.error("Invalid indexes provided.");
+                    }
+                    else {
+                        const areEqual = medicineLists[firstIndex].compareStock(medicineLists[secondIndex]);
+                        if (areEqual) {
+                            console.log("The medicines are identical (same name, potency, and manufacturer).");
+                        }
+                        else {
+                            console.log("The medicines are different.");
+                        }
+                    }
+                    break;
+                }
                 default:
                     break;
             }
