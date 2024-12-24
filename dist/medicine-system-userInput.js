@@ -1,12 +1,15 @@
 "use strict";
 class Medicines {
-    constructor(id, name, potency, manufacturer, quantity, price_per_unit) {
-        this.id = id;
+    constructor(name, potency, manufacturer, quantity, price_per_unit, id = Medicines.generateMedicineId()) {
         this.name = name;
         this.potency = potency;
         this.manufacturer = manufacturer;
         this.quantity = quantity;
         this.price_per_unit = price_per_unit;
+        this.id = id;
+    }
+    static generateMedicineId() {
+        return `M${String(this.counter++).padStart(3, "0")}`; // M001, M002, etc.
     }
     addStock(quantity) {
         this.quantity += quantity;
@@ -22,53 +25,45 @@ class Medicines {
             return false;
         }
     }
-    static addMedicine(id, name, potency, manufacturer, quantity, price_per_unit) {
-        if (Medicines.validateMedicineInput(id, name, potency, manufacturer, quantity, price_per_unit)) {
-            medicineLists.push(new Medicines(id, name, potency, manufacturer, quantity, price_per_unit));
+    addMedicine(name, potency, manufacturer, quantity, price_per_unit) {
+        if (Medicines.validateMedicineInput(name, potency, manufacturer, quantity, price_per_unit)) {
+            this.name = name,
+                this.potency = potency,
+                this.manufacturer = manufacturer,
+                this.quantity = quantity,
+                this.price_per_unit = price_per_unit;
             console.log("Medicine added successfully");
+            return this;
         }
         else {
             console.log("Medicine not added due to Invalid Input!");
+            return null;
         }
     }
-    static deleteMedicine(index) {
-        try {
-            if (index < 0 || index >= medicineLists.length) {
-                throw new ValidationError("Invalid Index");
-            }
-            medicineLists.splice(index, 1);
-        }
-        catch (error) {
-            if (error instanceof Error) {
-                console.error(error.message);
-            }
+    deleteMedicine(index) {
+        if (index < 0 || index >= medicineLists.length) {
+            console.error("Invalid Index");
             return;
         }
+        medicineLists.splice(index, 1);
+        console.log("Medicine deleted successfully");
     }
     searchMedicine() {
         console.log(this.id, this.name, this.potency, this.manufacturer, this.quantity, this.price_per_unit);
     }
-    static editMedicine(index, id, name, potency, manufacturer, quantity, price_per_unit) {
-        try {
-            if (index < 0 || index > medicineLists.length) {
-                throw new ValidationError("Invalid Index");
-            }
-            if (!Medicines.validateMedicineInput(id, name, potency, manufacturer, quantity, price_per_unit)) {
-                throw new ValidationError("Invalid Input Data");
-            }
-            medicineLists[index] = new Medicines(id, name, potency, manufacturer, quantity, price_per_unit);
+    editMedicine(index, name, potency, manufacturer, quantity, price_per_unit) {
+        if (index < 0 || index >= medicineLists.length) {
+            console.error("Invalid Index");
+            return;
         }
-        catch (error) {
-            if (error instanceof Error) {
-                console.error(error.message);
-            }
+        if (!Medicines.validateMedicineInput(name, potency, manufacturer, quantity, price_per_unit)) {
+            console.error("Invalid Input Data");
+            return;
         }
+        medicineLists[index] = new Medicines(name, potency, manufacturer, quantity, price_per_unit);
+        console.log("Medicine updated successfully.");
     }
-    static validateMedicineInput(id, name, potency, manufacturer, quantity, price_per_unit) {
-        if (!id || typeof id !== "string") {
-            console.error("Invalid ID: ID must be a non-empty string.");
-            return false;
-        }
+    static validateMedicineInput(name, potency, manufacturer, quantity, price_per_unit) {
         if (!name || typeof name !== "string") {
             console.error("Invalid Name: Name must be a non-empty string.");
             return false;
@@ -92,62 +87,56 @@ class Medicines {
         return true;
     }
 }
+Medicines.counter = 1;
 class Suppliers {
-    constructor(id, company_name, representative_name, address, description) {
-        this.id = id;
+    constructor(company_name, representative_name, address, description, id = Suppliers.generateSupplierId()) {
         this.company_name = company_name;
         this.representative_name = representative_name;
         this.address = address;
         this.description = description;
+        this.id = id;
     }
-    //friend like function to access prrivate members
-    static addSupplier(id, company_name, representative_name, address, description) {
-        if (Suppliers.validateSupplierInput(id, company_name, representative_name, address, description)) {
-            supplierLists.push(new Suppliers(id, company_name, representative_name, address, description));
+    static generateSupplierId() {
+        return `S${String(this.counter++).padStart(3, "0")}`;
+    }
+    addSupplier(company_name, representative_name, address, description) {
+        if (Suppliers.validateSupplierInput(company_name, representative_name, address, description)) {
+            this.company_name = company_name,
+                this.representative_name = representative_name,
+                this.address = address,
+                this.description = description;
             console.log("Supplier added successsfully");
+            return this;
         }
         else {
             console.log("Supplier not added due to Invalid input");
+            return null;
         }
     }
-    static deleteSupplier(index) {
-        try {
-            if (index < 0 || index >= supplierLists.length) {
-                throw new ValidationError("Invalid Index");
-            }
-            supplierLists.splice(index, 1);
-        }
-        catch (error) {
-            if (error instanceof Error) {
-                console.error(error.message);
-            }
+    deleteSupplier(index) {
+        if (index < 0 || index >= supplierLists.length) {
+            console.error("Invalid Index");
             return;
         }
+        supplierLists.splice(index, 1);
+        console.log("Supplier deleted successfully.");
     }
-    static editSupplier(index, id, company_name, representative_name, address, description) {
-        try {
-            if (index < 0 || index > supplierLists.length) {
-                throw new ValidationError("Invalid Index");
-            }
-            if (!Suppliers.validateSupplierInput(id, company_name, representative_name, address, description)) {
-                throw new ValidationError("Invalid Input Data");
-            }
-            supplierLists[index] = new Suppliers(id, company_name, representative_name, address, description);
+    editSupplier(index, company_name, representative_name, address, description) {
+        if (index < 0 || index >= supplierLists.length) {
+            console.error("Invalid Index");
+            return;
         }
-        catch (error) {
-            if (error instanceof Error) {
-                console.error(error.message);
-            }
+        if (!Suppliers.validateSupplierInput(company_name, representative_name, address, description)) {
+            console.error("Invalid Input Data");
+            return;
         }
+        supplierLists[index] = new Suppliers(company_name, representative_name, address, description);
+        console.log("Supplier updated successfully.");
     }
     searchSupplier() {
         console.log(this.id, this.company_name, this.representative_name, this.address, this.description);
     }
-    static validateSupplierInput(id, company_name, representative_name, address, description) {
-        if (!id || typeof id !== "string") {
-            console.error("Invalid ID: ID must be a non-empty string.");
-            return false;
-        }
+    static validateSupplierInput(company_name, representative_name, address, description) {
         if (!company_name || typeof company_name !== "string") {
             console.error("Invalid Company Name: Company Name must be a non-empty string.");
             return false;
@@ -171,90 +160,106 @@ class Suppliers {
         return this.address;
     }
 }
-//friend like function to aaccess private members
+Suppliers.counter = 1;
+//friend like function to access private members
 function Address(supplier) {
     return supplier.getAddress();
 }
 class SaleInvoices {
-    constructor(inv_no, date, id, manufacturer, quantities, total_price, discount) {
-        this.inv_no = inv_no;
+    constructor(date = new Date(), name = "", manufacturer = "", quantities = 0, total_price = 0, discount = 0, inv_no = SaleInvoices.generateInv_no()) {
         this.date = date;
-        this.id = id;
+        this.name = name;
         this.manufacturer = manufacturer;
         this.quantities = quantities;
         this.total_price = total_price;
         this.discount = discount;
+        this.inv_no = inv_no;
     }
-    static createSaleInvoice(inv_no, index, quantities, discount) {
-        try {
-            if (index < 0 || index >= medicineLists.length) {
-                throw new ValidationError("Invalid Index");
-            }
-            if (quantities <= 0) {
-                throw new ValidationError("Invalid Quantity:Must be greater than 0");
-            }
-            if (discount < 0 || discount > 100) {
-                throw new ValidationError("Invalid Discount: Must be between 0 and 100.");
-            }
-            if (quantities > medicineLists[index].quantity) {
-                throw new ValidationError("Insufficient stock for the requested quantity.");
-            }
-            const date = new Date(); // Set the current date as the invoice date
-            const total_price = quantities * medicineLists[index].price_per_unit * (1 - discount / 100);
-            saleInvoiceLists.push(new SaleInvoices(inv_no, date, medicineLists[index].id, medicineLists[index].manufacturer, quantities, total_price, discount));
-            medicineLists[index].quantity -= quantities;
-            console.log("Sale invoice created successfully!");
+    static generateInv_no() {
+        return `SIV${String(this.counter++).padStart(3, "0")}`;
+    }
+    createSaleInvoice(medIndex, quantities, discount) {
+        // Validate the index
+        if (medIndex < 0 || medIndex >= medicineLists.length) {
+            console.error("Invalid Index");
+            return null;
         }
-        catch (error) {
-            if (error instanceof Error) {
-                console.error(error.message);
-            }
-            return;
+        // Validate the quantities
+        if (quantities <= 0) {
+            console.error("Invalid Quantity: Must be greater than 0");
+            return null;
         }
+        // Validate the discount
+        if (discount < 0 || discount > 100) {
+            console.error("Invalid Discount: Must be between 0 and 100");
+            return null;
+        }
+        // Check stock availability
+        if (quantities > medicineLists[medIndex].quantity) {
+            console.error("Insufficient stock for the requested quantity");
+            return null;
+        }
+        // Populate SaleInvoice fields
+        this.date = new Date(); // Set the current date as the invoice date
+        this.manufacturer = medicineLists[medIndex].manufacturer;
+        this.name = medicineLists[medIndex].name;
+        this.quantities = quantities;
+        this.total_price =
+            quantities *
+                medicineLists[medIndex].price_per_unit *
+                (1 - discount / 100);
+        this.discount = discount;
+        // Deduct stock quantity
+        medicineLists[medIndex].quantity -= quantities;
+        console.log("Sale invoice created successfully!");
+        return this;
     }
 }
-class PurchaseInvoices extends SaleInvoices {
-    constructor(inv_no, date, id_of_supplier, manufacturer, quantities, total_price, discount) {
-        super(inv_no, date, id_of_supplier, manufacturer, quantities, total_price, discount);
-        this.inv_no = inv_no;
+SaleInvoices.counter = 1;
+class PurchaseInvoices {
+    constructor(date = new Date(), manufacturer = "", name = "", quantities = 0, total_price = 0, discount = 0, inv_no = PurchaseInvoices.generatePIV_no()) {
         this.date = date;
-        this.id_of_supplier = id_of_supplier;
         this.manufacturer = manufacturer;
+        this.name = name;
         this.quantities = quantities;
         this.total_price = total_price;
         this.discount = discount;
+        this.inv_no = inv_no;
     }
-    static createPurchaseInvoice(inv_no, medIndex, SupIndex, quantities, discount) {
-        try {
-            if (medIndex < 0 || medIndex >= medicineLists.length) {
-                throw new ValidationError("Invalid Index");
-            }
-            if (quantities <= 0) {
-                throw new ValidationError("Quantity must be greater than zero.");
-            }
-            if (discount < 0 || discount > 100) {
-                throw new ValidationError("Invalid Discount: Must be between 0 and 100.");
-            }
-            const date = new Date();
-            const total_price = medicineLists[medIndex].price_per_unit * quantities * (1 - discount / 100);
-            purchaseInvoiceLists.push(new PurchaseInvoices(inv_no, date, supplierLists[medIndex].id, medicineLists[SupIndex].manufacturer, quantities, total_price, discount));
-            medicineLists[medIndex].quantity += quantities;
-            console.log("Purchase Invoice Created Successfully");
+    static generatePIV_no() {
+        return `PIV${String(this.counter++).padStart(3, "0")}`;
+    }
+    createPurchaseInvoice(medIndex, quantities, discount) {
+        // Validate medIndex
+        if (medIndex < 0 || medIndex >= medicineLists.length) {
+            console.error("Invalid Index");
+            return null;
         }
-        catch (error) {
-            if (error instanceof Error) {
-                console.error(error.message);
-            }
-            return;
+        // Validate quantities
+        if (quantities <= 0) {
+            console.error("Quantity must be greater than zero.");
+            return null;
         }
+        // Validate discount
+        if (discount < 0 || discount > 100) {
+            console.error("Invalid Discount: Must be between 0 and 100.");
+            return null;
+        }
+        // Proceed with creating the invoice
+        this.date = new Date();
+        this.manufacturer = medicineLists[medIndex].manufacturer;
+        this.quantities = quantities;
+        this.name = medicineLists[medIndex].name;
+        this.total_price =
+            medicineLists[medIndex].price_per_unit * quantities * (1 - discount / 100);
+        this.discount = discount;
+        // Update stock quantity
+        console.log("Purchase Invoice Created Successfully");
+        medicineLists[medIndex].quantity += quantities;
+        return this;
     }
 }
-class ValidationError extends Error {
-    constructor(message) {
-        super(message);
-        this.name = "ValidationError";
-    }
-}
+PurchaseInvoices.counter = 1;
 function filterByDate(list, startDate, endDate) {
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
         console.error("Invalid dates provided for filtering.");
@@ -306,29 +311,52 @@ do {
             ]);
             switch (medicineChoice) {
                 case 1: {
-                    const id = prompt("Enter Medicine ID:") || "";
                     const name = prompt("Enter Medicine Name:") || "";
                     const potency = prompt("Enter Potency:") || "";
                     const manufacturer = prompt("Enter Manufacturer:") || "";
                     const quantity = Number(prompt("Enter Quantity:")) || 0;
                     const price_per_unit = Number(prompt("Enter Price per Unit:")) || 0;
-                    Medicines.addMedicine(id, name, potency, manufacturer, quantity, price_per_unit);
+                    const newMed = new Medicines(name, potency, manufacturer, quantity, price_per_unit).addMedicine(name, potency, manufacturer, quantity, price_per_unit);
+                    if (newMed) {
+                        medicineLists.push(newMed);
+                    }
                     break;
                 }
                 case 2: {
-                    const index = Number(prompt("Enter Medicine Index:")) || 0;
-                    const id = prompt("Enter new ID:") || "";
+                    const indexInput = prompt("Enter Medicine Index:");
+                    if (indexInput === null || indexInput.trim() === "") {
+                        console.error("No index provided. Returning to menu.");
+                        break; // Continue the menu loop
+                    }
+                    const index = Number(indexInput);
+                    if (isNaN(index) || index < 0 || index >= medicineLists.length) {
+                        console.error("Invalid index: Out of range or not a number.");
+                        break; // Continue the menu loop
+                    }
                     const name = prompt("Enter new Name:") || "";
                     const potency = prompt("Enter new Potency:") || "";
                     const manufacturer = prompt("Enter new Manufacturer:") || "";
                     const quantity = Number(prompt("Enter new Quantity:")) || 0;
                     const price_per_unit = Number(prompt("Enter new Price per Unit:")) || 0;
-                    Medicines.editMedicine(index, id, name, potency, manufacturer, quantity, price_per_unit);
+                    medicineLists[index].editMedicine(index, name, potency, manufacturer, quantity, price_per_unit);
                     break;
                 }
                 case 3: {
-                    const index = Number(prompt("Enter Medicine Index to Delete:")) || 0;
-                    Medicines.deleteMedicine(index);
+                    const indexInput = prompt("Enter Medicine Index to Delete:");
+                    if (indexInput === null || indexInput.trim() === "") {
+                        console.error("No index provided. Operation canceled.");
+                        break;
+                    }
+                    const index = Number(indexInput);
+                    if (isNaN(index)) {
+                        console.error("Invalid input: Index must be a number.");
+                        break;
+                    }
+                    if (index < 0 || index >= medicineLists.length) {
+                        console.error("Invalid index: Out of range.");
+                        break;
+                    }
+                    medicineLists[index].deleteMedicine(index);
                     break;
                 }
                 case 4:
@@ -398,27 +426,50 @@ do {
             ]);
             switch (supplierChoice) {
                 case 1: {
-                    const id = prompt("Enter Supplier ID:") || "";
                     const companyName = prompt("Enter Company Name:") || "";
                     const repName = prompt("Enter Representative Name:") || "";
                     const address = prompt("Enter Address:") || "";
                     const description = prompt("Enter Description:") || "";
-                    Suppliers.addSupplier(id, companyName, repName, address, description);
+                    const newSup = new Suppliers(companyName, repName, address, description).addSupplier(companyName, repName, address, description);
+                    if (newSup) {
+                        supplierLists.push(newSup);
+                    }
                     break;
                 }
                 case 2: {
-                    const index = Number(prompt("Enter Supplier Index:")) || 0;
-                    const id = prompt("Enter new ID:") || "";
+                    const indexInput = prompt("Enter Supplier Index:");
+                    if (indexInput === null || indexInput.trim() === "") {
+                        console.error("No index provided. Returning to menu.");
+                        break; // Continue the menu loop
+                    }
+                    const index = Number(indexInput);
+                    if (isNaN(index) || index < 0 || index >= supplierLists.length) {
+                        console.error("Invalid index: Out of range or not a number.");
+                        break; // Continue the menu loop
+                    }
                     const companyName = prompt("Enter new Company Name:") || "";
                     const repName = prompt("Enter new Representative Name:") || "";
                     const address = prompt("Enter new Address:") || "";
                     const description = prompt("Enter new Description:") || "";
-                    Suppliers.editSupplier(index, id, companyName, repName, address, description);
+                    supplierLists[index].editSupplier(index, companyName, repName, address, description);
                     break;
                 }
                 case 3: {
-                    const index = Number(prompt("Enter Supplier Index to Delete:")) || 0;
-                    Suppliers.deleteSupplier(index);
+                    const indexInput = prompt("Enter Supplier Index to Delete:");
+                    if (indexInput === null || indexInput.trim() === "") {
+                        console.error("No index provided. Operation canceled.");
+                        break;
+                    }
+                    const index = Number(indexInput);
+                    if (isNaN(index)) {
+                        console.error("Invalid input: Index must be a number.");
+                        break;
+                    }
+                    if (index < 0 || index >= supplierLists.length) {
+                        console.error("Invalid index: Out of range.");
+                        break;
+                    }
+                    supplierLists[index].deleteSupplier(index);
                     break;
                 }
                 case 4:
@@ -434,19 +485,24 @@ do {
             break;
         }
         case 3: {
-            const saleInvNo = prompt("Enter Sale Invoice No:") || "";
             const medicineIndex = Number(prompt("Enter Medicine Index:")) || 0;
             const saleQty = Number(prompt("Enter Sale Quantity:")) || 0;
             const saleDiscount = Number(prompt("Enter Discount (%):")) || 0;
-            SaleInvoices.createSaleInvoice(saleInvNo, medicineIndex, saleQty, saleDiscount);
+            const newSIV = new SaleInvoices().createSaleInvoice(medicineIndex, saleQty, saleDiscount);
+            if (newSIV) {
+                saleInvoiceLists.push(newSIV);
+                console.log("New Sale Invoice:", newSIV);
+            }
             break;
         }
         case 4: {
-            const purchaseInvNo = prompt("Enter Purchase Invoice No:") || "";
-            const supplierIndex = Number(prompt("Enter Supplier Index:")) || 0;
+            const medIndex = Number(prompt("Enter Medicine Index:")) || 0;
             const purchaseQty = Number(prompt("Enter Purchase Quantity:")) || 0;
             const purchaseDiscount = Number(prompt("Enter Discount (%):")) || 0;
-            PurchaseInvoices.createPurchaseInvoice(purchaseInvNo, supplierIndex, supplierIndex, purchaseQty, purchaseDiscount);
+            const newPIV = new PurchaseInvoices().createPurchaseInvoice(medIndex, purchaseQty, purchaseDiscount);
+            if (newPIV) {
+                purchaseInvoiceLists.push(newPIV);
+            }
             break;
         }
         case 5: {
